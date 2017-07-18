@@ -1,0 +1,13 @@
+{
+  "name": "vscode-theme-lister",
+  "version": "1.0.0",
+  "main": "index.js",
+  "license": "MIT",
+  "dependencies": {
+    "@types/superagent": "^3.5.3",
+    "superagent": "^3.5.2"
+  },
+  "scripts": {
+    "download_json": "node scripts/json_downloader.js"
+  }
+}
