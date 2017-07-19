@@ -12,6 +12,6 @@
   },
   "scripts": {
     "download_json": "node scripts/json_downloader.js",
-    "install_extension": "node scripts/run_an_extension.js"
+    "extension": "node scripts/run_an_extension.js"
   }
 }

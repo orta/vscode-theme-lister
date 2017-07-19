@@ -1,7 +1,8 @@
 // @ts-check
 
-// This should come in via an arg
-var extensionName = "an-old-hope-theme-vscode"
+// Expects to be called like: node scripts/run_an_extension.js "an-old-hope-theme-vscode"
+
+var extensionName = process.argv[2]
 var insiders = true
 
 var appPath = "/Users/orta/dev/projects/danger/danger-js"
@@ -24,11 +25,22 @@ var settingPath = path.join(os.homedir(), "Library", "Application Support", appN
 
 var extension = JSON.parse(fs.readFileSync("data/" + extensionName + "/extension.json", "utf8"))
 var extensionID = extension.publisher.publisherName + "." + extension.extensionName
+var folderExtensionID = extension.publisher.publisherName + "." + extension.extensionName.toLowerCase()
 
-if (!install_in_code_workaround) {
+var killProcess = () => {
+  var electronProcessPath = "Visual Studio " + appName + ".app/Contents/MacOS/Electron"
+  var codeProcess = "ps -ax | grep '" + electronProcessPath + "' |  awk '{print $1}' | head -n 1"
+  var killProcess = shell.exec(codeProcess)
+  shell.exec("kill " + killProcess)
+  shell.exec("sleep 2")
+}
+// Start with the app closed
+killProcess()
+
+if (install_in_code_workaround) {
   // Install via `code` then move it into the insiders
   shell.exec("code --install-extension " + extensionID)
-  shell.mv("~/.vscode/extensions/" + extensionID + "-*", "~/.vscode-insiders/extensions")
+  shell.mv("~/.vscode/extensions/" + folderExtensionID + "-*", "~/.vscode-insiders/extensions")
   shell.exec("sleep 3")
 } else {
   // Call the extension to start installing
@@ -40,18 +52,13 @@ if (!install_in_code_workaround) {
 
 // We need to get the package.json for the theme
 // We don't know the theme's version so glob using cat
-var extensionPackage = shell.cat(extensionsDir + "/" + extensionID + "*" + "/package.json")
+var extensionPackage = shell.cat(extensionsDir + "/" + folderExtensionID + "*" + "/package.json")
 var extensionSettings = JSON.parse(extensionPackage)
 
-// Turn to loop
 extensionSettings.contributes.themes.forEach(function(theme) {
   var themeName = theme.label
 
-  // The process we need to kill is the electron app
-  var electronProcessPath = "Visual Studio " + appName + ".app/Contents/MacOS/Electron"
-  var codeProcess = "ps -ax | grep '" + electronProcessPath + "' |  awk '{print $1}' | head -n 1"
-  var process = shell.exec(codeProcess)
-  shell.exec("kill " + process)
+  killProcess()
 
   // Set the theme in the user settings
   var currentSettings = JSON.parse(fs.readFileSync(settingPath, "utf8"))
@@ -76,3 +83,6 @@ extensionSettings.contributes.themes.forEach(function(theme) {
     ".png'"
   shell.exec(screengrab)
 }, this)
+
+// Mainly to ensure a clean slate, and make it obvious something has happened
+killProcess()

@@ -87,7 +87,7 @@ const handleExtensions = (err, res) => {
       if (!fs.existsSync(folder)) {
         fs.mkdirSync(folder)
       }
-      fs.writeFileSync(folder + "/extension.json", JSON.stringify(extension), "utf8")
+      fs.writeFileSync(folder + "/extension.json", JSON.stringify(extension, null, "  "), "utf8")
     }, this)
 
     requestForPage(page).end(handleExtensions)
