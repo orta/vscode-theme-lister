@@ -1,10 +1,10 @@
 # Notes on trying to automate generating a screenshot for every VS Code theme.
 
-So the general gist should be:
+So the general gist is:
 
 * Download all JSON for every theme (`yarn download_json`)
-* Loop though JSON themes
-* For each theme:
+* Loop though JSON themes (`yarn all`)
+* For each theme: (`yarn extension -- [theme_id]`)
 
   - Install the extension
   - Set the theme ( user settings JSON: `"workbench.colorTheme": "Slime",`)

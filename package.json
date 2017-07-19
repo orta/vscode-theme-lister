@@ -12,6 +12,7 @@
   },
   "scripts": {
     "download_json": "node scripts/json_downloader.js",
-    "extension": "node scripts/run_an_extension.js"
+    "extension": "node scripts/run_an_extension.js",
+    "all": "node scripts/run_all_extensions.js"
   }
 }

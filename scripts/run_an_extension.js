@@ -86,3 +86,4 @@ extensionSettings.contributes.themes.forEach(function(theme) {
 
 // Mainly to ensure a clean slate, and make it obvious something has happened
 killProcess()
+shell.exec(code + " --uninstall-extension " + extensionID)
