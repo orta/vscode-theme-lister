@@ -1,15 +1,15 @@
 // @ts-check
 
 // Expects to be called like: node scripts/run_an_extension.js "an-old-hope-theme-vscode"
+var path = require("path")
+const fs = require("fs")
 
 var extensionName = process.argv[2]
 var insiders = true
 
 var appPath = "/Users/orta/dev/projects/danger/danger-js"
 var fileInApp = "/Users/orta/dev/projects/danger/danger-js/source/api/fetch.ts"
-
-var path = require("path")
-const fs = require("fs")
+var appForTitle = path.basename(appPath)
 
 var os = require("os")
 var shell = require("shelljs")
@@ -29,12 +29,17 @@ var folderExtensionID = extension.publisher.publisherName + "." + extension.exte
 
 var killProcess = () => {
   var electronProcessPath = "Visual Studio " + appName + ".app/Contents/MacOS/Electron"
-  var codeProcess = "ps -ax | grep '" + electronProcessPath + "' |  awk '{print $1}' | head -n 1"
-  var killProcess = shell.exec(codeProcess)
-  shell.exec("kill " + killProcess)
-  shell.exec("sleep 2")
+  var codeProcess = "ps -ax | grep '" + electronProcessPath + "'"
+  var codeProcesses = shell.exec(codeProcess)
+  const lines = codeProcesses.stdout.split("\n")
+  const lineWeWant = lines.find(l => l.includes("Applications/"))
+  if (lineWeWant) {
+    const processID = lineWeWant.split(" ")[0]
+    shell.exec("kill " + processID)
+    shell.exec("sleep 2")
+  }
 }
-// Start with the app closed
+// // Start with the app closed
 killProcess()
 
 if (install_in_code_workaround) {
@@ -72,15 +77,12 @@ extensionSettings.contributes.themes.forEach(function(theme) {
 
   // Time to let extensions load, and for the text to be colored
   shell.exec("sleep 3")
-  var screengrab =
-    "screencapture -l $(./window_list.py '" +
-    appName +
-    "' | head -1| awk '{print $1}') " +
-    "'data/" +
-    extensionName +
-    "/" +
-    themeName +
-    ".png'"
+  console.log("./window_list.py '" + appName + "'")
+  const screengrabProcesses = shell.exec("./window_list.py '" + appName + "'")
+  const screenshotProcess = screengrabProcesses.stdout.split("\n").find(l => l.includes(appForTitle)).split(" ")[0]
+
+  var screengrab = "screencapture -l " + screenshotProcess + " 'data/" + extensionName + "/" + themeName + ".png'"
+  console.log(screengrab)
   shell.exec(screengrab)
 }, this)
 

@@ -5,9 +5,15 @@
 var shell = require("shelljs")
 var fs = require("fs")
 fs.readdirSync("data").forEach(file => {
+  // skip dupes
+  // console.log(file)
   if (file.startsWith(".")) {
     return
   }
 
-  shell.exec("yarn extension -- " + file)
+  const pngs = fs.readdirSync("data/" + file).filter(f => f.includes(".png"))
+  if (pngs.length === 0) {
+    console.log(file)
+    shell.exec("yarn extension -- " + file)
+  }
 })

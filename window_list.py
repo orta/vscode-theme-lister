@@ -11,7 +11,7 @@ import sys
 class Windows(list):
     def find(self, name):
         for window in self:
-            if window.IsOnscreen and window.OwnerName.find(name) > -1:
+            if window.OwnerName.find(name) > -1:
                 print window
 
     def dump(self):
