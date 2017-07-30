@@ -1,4 +1,4 @@
-# Notes on trying to automate generating a screenshot for every VS Code theme.
+# Pulling down the data locally
 
 So the general gist is:
 
