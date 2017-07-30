@@ -27,6 +27,7 @@ var extension = JSON.parse(fs.readFileSync("data/" + extensionName + "/extension
 var extensionID = extension.publisher.publisherName + "." + extension.extensionName
 var folderExtensionID = extension.publisher.publisherName + "." + extension.extensionName.toLowerCase()
 
+// Kill the current VS Code
 var killProcess = () => {
   var electronProcessPath = "Visual Studio " + appName + ".app/Contents/MacOS/Electron"
   var codeProcess = "ps -ax | grep '" + electronProcessPath + "'"
@@ -34,7 +35,10 @@ var killProcess = () => {
   const lines = codeProcesses.stdout.split("\n")
   const lineWeWant = lines.find(l => l.includes("Applications/"))
   if (lineWeWant) {
-    const processID = lineWeWant.split(" ")[0]
+    let processID = lineWeWant.split(" ")[0]
+    if (processID === "") {
+      processID = lineWeWant.split(" ")[1]
+    }
     shell.exec("kill " + processID)
     shell.exec("sleep 2")
   }
@@ -57,8 +61,16 @@ if (install_in_code_workaround) {
 
 // We need to get the package.json for the theme
 // We don't know the theme's version so glob using cat
-var extensionPackage = shell.cat(extensionsDir + "/" + folderExtensionID + "*" + "/package.json")
+const installedThemeFolder = extensionsDir + "/" + folderExtensionID
+var extensionPackage = shell.cat(installedThemeFolder + "*" + "/package.json")
+
+// Copy all tmthemes + JSON for later
+shell.cp("-r", installedThemeFolder + "*/**/*.tmtheme", "data/" + extensionName + "/")
+shell.cp("-r", installedThemeFolder + "*/**/*.tmTheme", "data/" + extensionName + "/")
+shell.cp("-r", installedThemeFolder + "*/**/*.json", "data/" + extensionName + "/")
+
 var extensionSettings = JSON.parse(extensionPackage)
+process.exit()
 
 extensionSettings.contributes.themes.forEach(function(theme) {
   var themeName = theme.label
