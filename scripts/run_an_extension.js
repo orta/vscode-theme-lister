@@ -65,13 +65,14 @@ const installedThemeFolder = extensionsDir + "/" + folderExtensionID
 var extensionPackage = shell.cat(installedThemeFolder + "*" + "/package.json")
 
 // Copy all tmthemes + JSON for later
-shell.cp("-r", installedThemeFolder + "*/**/*.tmtheme", "data/" + extensionName + "/")
-shell.cp("-r", installedThemeFolder + "*/**/*.tmTheme", "data/" + extensionName + "/")
-shell.cp("-r", installedThemeFolder + "*/**/*.json", "data/" + extensionName + "/")
+shell.cp("-r", installedThemeFolder + "*/theme/*.tmtheme", "data/" + extensionName + "/")
+shell.cp("-r", installedThemeFolder + "*/theme/*.tmTheme", "data/" + extensionName + "/")
+shell.cp("-r", installedThemeFolder + "*/theme/*.json", "data/" + extensionName + "/")
+
+// Themes could be licensed, so note this
+shell.cp("-r", installedThemeFolder + "*/LICENSE", "data/" + extensionName + "/")
 
 var extensionSettings = JSON.parse(extensionPackage)
-process.exit()
-
 extensionSettings.contributes.themes.forEach(function(theme) {
   var themeName = theme.label
 
